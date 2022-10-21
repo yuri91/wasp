@@ -174,6 +174,8 @@ auto LexReserved(SpanU8* data) -> Token {
 
 auto LexAnnotation(SpanU8* data) -> Token {
   MatchGuard guard{data};
+  SkipChar(data);
+  SkipChar(data);
   ReadReservedChars(data);
   return Token(guard.loc(), TokenType::LparAnn);
 }
@@ -616,5 +618,38 @@ auto LexNoWhitespace(SpanU8* data) -> Token {
     }
   }
 }
+
+auto LexNoWhitespaceCollectAnnots(SpanU8* data) -> std::pair<Token, std::vector<std::vector<Token>>> {
+  std::vector<std::vector<Token>> annots;
+  while(true) {
+    auto token = LexNoWhitespace(data);
+    if (token.type != TokenType::LparAnn) {
+      return std::make_pair(token, std::move(annots));
+    }
+    std::vector<Token> annot_tokens;
+    annot_tokens.push_back(token);
+    int depth = 1;
+    while (depth > 0) {
+      token = LexNoWhitespace(data);
+      switch (token.type) {
+        case TokenType::Eof:
+          annots.push_back(std::move(annot_tokens));
+          return std::make_pair(token, std::move(annots));
+        case TokenType::Lpar:
+        case TokenType::LparAnn:
+          depth++;
+          break;
+        case TokenType::Rpar:
+          depth--;
+          break;
+        default:
+          break;
+      }
+      annot_tokens.push_back(token);
+    }
+    annots.push_back(std::move(annot_tokens));
+  }
+}
+
 
 }  // namespace wasp::text

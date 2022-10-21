@@ -17,6 +17,7 @@
 #include "wasp/text/read/lex.h"
 
 #include <cassert>
+#include <algorithm>
 
 namespace wasp::text {
 
@@ -30,13 +31,19 @@ inline auto Tokenizer::count() const -> int {
   return count_;
 }
 
+inline auto Tokenizer::annotations() -> std::vector<std::vector<Token>>& {
+  return annots_;
+}
+
 inline auto Tokenizer::Previous() const -> Token {
   return previous_token_;
 }
 
 inline auto Tokenizer::Read() -> Token {
   if (count_ == 0) {
-    previous_token_ = LexNoWhitespace(&data_);
+    auto [cur, annots] = LexNoWhitespaceCollectAnnots(&data_);
+    std::move(annots.begin(), annots.end(), std::back_inserter(annots_));
+    previous_token_ = cur;
   } else {
     previous_token_ = tokens_[current_];
     current_ = !current_;
@@ -47,7 +54,9 @@ inline auto Tokenizer::Read() -> Token {
 
 inline auto Tokenizer::Peek(unsigned at) -> Token {
   if (count_ == 0) {
-    tokens_[current_] = LexNoWhitespace(&data_);
+    auto [cur, annots] = LexNoWhitespaceCollectAnnots(&data_);
+    std::move(annots.begin(), annots.end(), std::back_inserter(annots_));
+    tokens_[current_] = cur;
     count_++;
   }
   if (at == 0) {
@@ -55,7 +64,9 @@ inline auto Tokenizer::Peek(unsigned at) -> Token {
   } else {
     assert(at == 1);
     if (count_ == 1) {
-      tokens_[!current_] = LexNoWhitespace(&data_);
+      auto [cur, annots] = LexNoWhitespaceCollectAnnots(&data_);
+      std::move(annots.begin(), annots.end(), std::back_inserter(annots_));
+      tokens_[!current_] = cur;
       count_++;
     }
     return tokens_[!current_];

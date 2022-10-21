@@ -19,11 +19,13 @@
 
 #include "wasp/base/span.h"
 #include "wasp/text/read/token.h"
+#include <vector>
 
 namespace wasp::text {
 
 auto Lex(SpanU8* data) -> Token;
 auto LexNoWhitespace(SpanU8* data) -> Token;
+auto LexNoWhitespaceCollectAnnots(SpanU8* data) -> std::pair<Token, std::vector<std::vector<Token>>>;
 
 }  // namespace wasp::text
 

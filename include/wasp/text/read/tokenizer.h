@@ -21,6 +21,7 @@
 #include "wasp/base/span.h"
 #include "wasp/base/types.h"
 #include "wasp/text/read/token.h"
+#include <vector>
 
 namespace wasp::text {
 
@@ -30,6 +31,7 @@ class Tokenizer {
 
   bool empty() const;
   auto count() const -> int;
+  auto annotations() -> std::vector<std::vector<Token>>&;
 
   auto Previous() const -> Token;
   auto Read() -> Token;
@@ -44,6 +46,7 @@ class Tokenizer {
   int count_ = 0;
   Token tokens_[2];  // Two tokens of lookahead.
   Token previous_token_;
+  std::vector<std::vector<Token>> annots_;
 };
 
 }  // namespace wasp::text
