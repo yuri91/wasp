@@ -79,6 +79,7 @@ add_executable(wasp
   pattern.h
   validate.h
   wat2wasm.h
+  custom.h
 
   callgraph.cc
   cfg.cc
@@ -89,6 +90,7 @@ add_executable(wasp
   wasp.cc
   wasm2wat.cc
   wat2wasm.cc
+  custom.cc
 )
 
 target_compile_options(wasp

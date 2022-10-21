@@ -29,6 +29,7 @@
 #include "src/tools/validate.h"
 #include "src/tools/wat2wasm.h"
 #include "src/tools/wasm2wat.h"
+#include "src/tools/custom.h"
 #include "wasp/base/enumerate.h"
 #include "wasp/base/formatters.h"
 #include "wasp/base/span.h"
@@ -55,6 +56,7 @@ int main(int argc, char** argv) {
       {"pattern", wasp::tools::pattern::Main},
       {"wat2wasm", wasp::tools::wat2wasm::Main},
       {"wasm2wat", wasp::tools::wasm2wat::Main},
+      {"custom", wasp::tools::custom::Main},
   };
 
   wasp::tools::ArgParser parser{"wasp"};
@@ -84,5 +86,6 @@ void PrintHelp(int errcode) {
   Format(&std::cerr, "  pattern     Find common instruction sequences.\n");
   Format(&std::cerr, "  wat2wasm    Convert a WebAssembly text file to binary.\n");
   Format(&std::cerr, "  wasm2wat    Convert a WebAssembly binary file to text.\n");
+  Format(&std::cerr, "  custom      Validate well-known custom sections and annotations\n");
   exit(errcode);
 }
